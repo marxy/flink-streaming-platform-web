@@ -45,7 +45,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
         log.debug("进入LoginInterceptor拦截器 {}", request.getRequestURI());
         if (indexPath.equals(request.getRequestURI())) {
-            response.sendRedirect("/static/ui/index.html");
+            response.sendRedirect("index.html");
             return false;
         }
         UserSession userSession = UserSessionUtil.userSession(request);
