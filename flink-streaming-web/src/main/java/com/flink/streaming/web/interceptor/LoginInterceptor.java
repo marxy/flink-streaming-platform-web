@@ -9,6 +9,7 @@ import com.flink.streaming.web.utils.WebUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,12 +31,20 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ServerProperties serverProperties;
+
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+        String contextPath = serverProperties.getServlet().getContextPath();
+        String indexPath = "/";
+        if (contextPath != null) {
+            indexPath = contextPath + indexPath;
+        }
         log.debug("进入LoginInterceptor拦截器 {}", request.getRequestURI());
-        if ("/".equals(request.getRequestURI())) {
+        if (indexPath.equals(request.getRequestURI())) {
             response.sendRedirect("/static/ui/index.html");
             return false;
         }
