@@ -53,6 +53,10 @@ public enum SysConfigEnum {
             "自定义http回调告警(只需填写url即可如:http://127.0.0.1/alarmCallback 地址必须是alarmCallback )",
             SysConfigEnumType.ALART.name()),
 
+    FLINK_STREAMING_PLATFORM_ADDRESS("flink_streaming_platform_address",
+            "Flink管理平台地址",
+            SysConfigEnumType.SYS.name()),
+
     ;
 
 

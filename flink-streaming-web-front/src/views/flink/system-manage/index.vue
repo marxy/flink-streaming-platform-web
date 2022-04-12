@@ -69,6 +69,17 @@
         <el-button type="primary" @click="updateConfig('flink_rest_ha_http_address', form.flink_rest_ha_http_address)">提交</el-button>
         <el-button type="danger" @click="deleteConfig('flink_rest_ha_http_address')">删除</el-button>
       </el-form-item>
+      <el-form-item inline="true">
+        <span slot="label">Flink管理平台地址
+          <el-popover placement="right" trigger="hover">
+            <p>Flink管理平台地址</p>
+            <i slot="reference" class="el-icon-info" />
+          </el-popover>
+        </span>
+        <el-input v-model="form.flink_streaming_platform_address" placeholder="Flink管理平台地址" class="fl-form-item" />
+        <el-button type="primary" @click="updateConfig('flink_streaming_platform_address', form.flink_streaming_platform_address)">提交</el-button>
+        <el-button type="danger" @click="deleteConfig('flink_streaming_platform_address')">删除</el-button>
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -87,7 +98,8 @@ export default {
         auto_savepoint: '',
         yarn_rm_http_address: '',
         flink_rest_http_address: '',
-        flink_rest_ha_http_address: ''
+        flink_rest_ha_http_address: '',
+        flink_streaming_platform_address: '',
       }
     }
   },
@@ -123,6 +135,8 @@ export default {
             this.form.flink_rest_ha_http_address = item.val
           } else if (item.key === 'auto_savepoint') {
             this.form.auto_savepoint = item.val
+          } else if (item.key === 'flink_streaming_platform_address') {
+            this.form.flink_streaming_platform_address = item.val
           }
         })
       }).catch(error => {
@@ -162,6 +176,8 @@ export default {
         keyname = 'Flink HA Web地址'
       } else if (key === 'auto_savepoint') {
         keyname = 'Flink auto_savepoint'
+      } else if (key === 'flink_streaming_platform_address') {
+        keyname = 'Flink管理平台地址'
       }
       this.$confirm(`是否删除${keyname}`, '提示', {
         confirmButtonText: '确定',

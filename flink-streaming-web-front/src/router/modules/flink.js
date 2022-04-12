@@ -198,16 +198,16 @@ export const flinkRouter = [
       }
     ]
   },
-  {
-    path: '/flink/system-contact',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Contact',
-        component: () => import('@/views/flink/system-contact'),
-        meta: { title: '联系方式', icon: 'el-icon-tickets' }
-      }
-    ]
-  }
+  // {
+  //   path: '/flink/system-contact',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Contact',
+  //       component: () => import('@/views/flink/system-contact'),
+  //       meta: { title: '联系方式', icon: 'el-icon-tickets' }
+  //     }
+  //   ]
+  // }
 ]

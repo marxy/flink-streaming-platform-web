@@ -85,6 +85,19 @@ public class JobRunLogVO implements Serializable {
 
 
     public static JobRunLogVO toVO(JobRunLogDTO jobRunLogDTO, boolean isLocalLog,Integer port) {
+        JobRunLogVO jobRunLogVO = toVO(jobRunLogDTO, isLocalLog);
+        if (jobRunLogVO != null && port!=null && StringUtils.isNotEmpty(jobRunLogDTO.getRunIp())){
+            /**
+             * TODO: 调整ip
+             */
+            jobRunLogVO.setClinetJobUrl(String.format("http://%s:%s/log/getFlinkLocalJobLog",
+                    jobRunLogDTO.getRunIp(),port));
+        }
+
+        return jobRunLogVO;
+    }
+
+    public static JobRunLogVO toVO(JobRunLogDTO jobRunLogDTO, boolean isLocalLog) {
         if (jobRunLogDTO == null) {
             return null;
         }
@@ -103,9 +116,25 @@ public class JobRunLogVO implements Serializable {
         if (isLocalLog) {
             jobRunLogVO.setLocalLog(jobRunLogDTO.getLocalLog());
         }
-        if (port!=null && StringUtils.isNotEmpty(jobRunLogDTO.getRunIp())){
-            jobRunLogVO.setClinetJobUrl(String.format("http://%s:%s/log/getFlinkLocalJobLog",
-                    jobRunLogDTO.getRunIp(),port));
+        return jobRunLogVO;
+    }
+
+    public static JobRunLogVO toWebVO(JobRunLogDTO jobRunLogDTO, boolean isLocalLog, String platformAddress) {
+        JobRunLogVO jobRunLogVO = toVO(jobRunLogDTO, isLocalLog);
+        if (jobRunLogVO != null && StringUtils.isNotEmpty(platformAddress)){
+            /**
+             * TODO: 调整ip
+             */
+            if (!platformAddress.endsWith("/")) {
+                platformAddress = platformAddress + "/";
+            }
+            if (platformAddress.startsWith("http")) {
+                jobRunLogVO.setClinetJobUrl(String.format("%slog/getFlinkLocalJobLog",
+                        platformAddress));
+            } else {
+                jobRunLogVO.setClinetJobUrl(String.format("http://%slog/getFlinkLocalJobLog",
+                        platformAddress));
+            }
         }
 
         return jobRunLogVO;

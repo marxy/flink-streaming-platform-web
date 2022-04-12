@@ -1,5 +1,7 @@
 package com.flink.streaming.web.controller.api;
 
+import com.flink.streaming.web.enums.SysConfigEnum;
+import com.flink.streaming.web.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,11 +35,14 @@ public class JobLogApiController extends BaseController {
     @Autowired
     private CustomConfig customConfig;
 
+    @Autowired
+    private SystemConfigService systemConfigService;
+
     
     /**
      * 查询作业列表
      * 
-     * @param jobConfigParam
+     * @param jobRunLogParam
      * @return
      * @author wxj
      * @date 2021年12月1日 下午5:09:06 
@@ -59,7 +64,7 @@ public class JobLogApiController extends BaseController {
      * 查询日志详情
      * 
      * @param modelMap
-     * @param id
+     * @param logid
      * @return
      * @author wxj
      * @date 2021年12月14日 上午9:35:20 
@@ -67,7 +72,9 @@ public class JobLogApiController extends BaseController {
      */
     @RequestMapping(value = "/logDetail", method = {RequestMethod.POST})
     public RestResult<?> sysConfig(ModelMap modelMap, Long logid) {
-        JobRunLogVO vo = JobRunLogVO.toVO(jobRunLogService.getDetailLogById(logid), YN.Y.getCode(),customConfig.getWebPort());
+        String platformAddress = systemConfigService
+                .getSystemConfigByKey(SysConfigEnum.FLINK_STREAMING_PLATFORM_ADDRESS.getKey());
+        JobRunLogVO vo = JobRunLogVO.toWebVO(jobRunLogService.getDetailLogById(logid), YN.Y.getCode(),platformAddress);
         return RestResult.success(vo);
     }
 }

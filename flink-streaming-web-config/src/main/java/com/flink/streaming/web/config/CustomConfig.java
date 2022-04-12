@@ -17,4 +17,7 @@ public class CustomConfig {
 
     @Value("${server.port}")
     private  Integer webPort;
+
+    @Value("${server.servlet.context-path:null}")
+    private  String webContextPath;
 }

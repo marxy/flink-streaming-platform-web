@@ -2,6 +2,7 @@ package com.flink.streaming.web.interceptor;
 
 import com.flink.streaming.web.common.RestResult;
 import com.flink.streaming.web.common.util.UserSessionUtil;
+import com.flink.streaming.web.config.CustomConfig;
 import com.flink.streaming.web.model.dto.UserSession;
 import com.flink.streaming.web.model.vo.Constant;
 import com.flink.streaming.web.service.UserService;
@@ -32,15 +33,15 @@ public class LoginInterceptor implements HandlerInterceptor {
     private UserService userService;
 
     @Autowired
-    private ServerProperties serverProperties;
+    private CustomConfig customConfig;
 
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        String contextPath = serverProperties.getServlet().getContextPath();
+        String contextPath = customConfig.getWebContextPath();
         String indexPath = "/";
-        if (contextPath != null) {
+        if (contextPath != null && !contextPath.endsWith("/")) {
             indexPath = contextPath + indexPath;
         }
         log.debug("进入LoginInterceptor拦截器 {}", request.getRequestURI());
