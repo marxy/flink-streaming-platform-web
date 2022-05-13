@@ -232,7 +232,9 @@ public class TaskServiceAOImpl implements TaskServiceAO {
         }
         //查询任务状态
         JobStandaloneInfo jobStandaloneInfo = flinkRestRpcAdapter.getJobInfoForStandaloneByAppId(jobConfigDTO.getJobId(), jobConfigDTO.getDeployModeEnum());
-        if (jobStandaloneInfo != null && SystemConstants.STATUS_RUNNING.equals(jobStandaloneInfo.getState())) {
+        if (jobStandaloneInfo != null &&
+                (SystemConstants.STATUS_RUNNING.equals(jobStandaloneInfo.getState())
+                || SystemConstants.STATUS_RESTARTING.equals(jobStandaloneInfo.getState()))) {
             return;
         }
         //变更任务状态
