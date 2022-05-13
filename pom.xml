@@ -43,6 +43,7 @@
         <spring.boot.version>2.2.8.RELEASE</spring.boot.version>
         <logback.version>1.2.11</logback.version>
         <spring-framework.version>5.2.18.RELEASE</spring-framework.version>
+        <log4j2.version>2.17.1</log4j2.version>
     </properties>
 
     <dependencyManagement>
