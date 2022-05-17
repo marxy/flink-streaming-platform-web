@@ -25,6 +25,9 @@ public class FlinkProxyServletConfiguration implements EnvironmentAware {
         ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new ProxyServlet(), properties.getProperty("servlet-url"));
         servletRegistrationBean.addInitParameter(ProxyServlet.P_TARGET_URI, properties.getProperty("target-url"));
         servletRegistrationBean.addInitParameter(ProxyServlet.P_LOG, properties.getProperty("logging-enabled", "false"));
+        servletRegistrationBean.addInitParameter(ProxyServlet.P_MAXCONNECTIONS, properties.getProperty("max-connections", "100"));
+        servletRegistrationBean.addInitParameter(ProxyServlet.P_PRESERVEHOST, properties.getProperty("preserve-host", "false"));
+        servletRegistrationBean.addInitParameter(ProxyServlet.P_PRESERVECOOKIES, properties.getProperty("preserve-cookies", "true"));
         return servletRegistrationBean;
     }
 

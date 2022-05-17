@@ -200,8 +200,8 @@ public class UserApiController extends BaseController {
     /**
      * 修改用户信息
      * 
-     * @param username
-     * @param name
+     * @param userid
+     * @param fullname
      * @return
      * @author wxj
      * @date 2021年12月1日 上午10:19:56 
