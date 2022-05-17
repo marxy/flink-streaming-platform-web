@@ -17,6 +17,7 @@ import com.flink.streaming.web.service.SystemConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -34,6 +35,9 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 
   @Autowired
   private SystemConfigMapper systemConfigMapper;
+
+  @Value("${proxy.flink.target-url}")
+  private String flinkUrl;
 
 
   @Override
@@ -90,7 +94,8 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 
     switch (deployModeEnum) {
       case LOCAL:
-        String urlLocal = this.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HTTP_ADDRESS.getKey());
+        String urlLocal = flinkUrl;
+//        String urlLocal = this.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HTTP_ADDRESS.getKey());
         if (StringUtils.isEmpty(urlLocal)) {
           throw new BizException(SysErrorEnum.SYSTEM_CONFIG_IS_NULL_FLINK_REST_HTTP_ADDRESS);
         }
