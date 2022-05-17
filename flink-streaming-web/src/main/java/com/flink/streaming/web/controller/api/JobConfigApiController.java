@@ -285,7 +285,7 @@ public class JobConfigApiController extends BaseController {
      * 查询历史版本
      * 
      * @param modelMap
-     * @param jobConfigId
+     * @param jobConfigParam
      * @return
      * @author wxj
      * @date 2021年12月20日 上午11:07:22 
@@ -565,9 +565,15 @@ public class JobConfigApiController extends BaseController {
      */
     private void completeJObConfigDTO(JobConfigDTO jobConfigDTO) {
         Map<DeployModeEnum, String> domainKey = new HashMap<>();
-        domainKey.put(DeployModeEnum.YARN_PER, systemConfigService.getSystemConfigByKey(SysConfigEnum.YARN_RM_HTTP_ADDRESS.getKey()));
-        domainKey.put(DeployModeEnum.LOCAL, systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HTTP_ADDRESS.getKey()));
-        domainKey.put(DeployModeEnum.STANDALONE, systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HA_HTTP_ADDRESS.getKey()));
+
+        String flinkWebUrl = systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_STREAMING_PLATFORM_ADDRESS.getKey());
+        flinkWebUrl = flinkWebUrl + "flink/";
+        domainKey.put(DeployModeEnum.YARN_PER, flinkWebUrl);
+        domainKey.put(DeployModeEnum.LOCAL, flinkWebUrl);
+        domainKey.put(DeployModeEnum.STANDALONE, flinkWebUrl);
+//        domainKey.put(DeployModeEnum.YARN_PER, systemConfigService.getSystemConfigByKey(SysConfigEnum.YARN_RM_HTTP_ADDRESS.getKey()));
+//        domainKey.put(DeployModeEnum.LOCAL, systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HTTP_ADDRESS.getKey()));
+//        domainKey.put(DeployModeEnum.STANDALONE, systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HA_HTTP_ADDRESS.getKey()));
         // 补充FlinkRunUrl字段
         String domain = domainKey.get(jobConfigDTO.getDeployModeEnum());
         if (StringUtils.isNotEmpty(domain)) {
@@ -631,9 +637,15 @@ public class JobConfigApiController extends BaseController {
         List<Long> jobIdList= pageModel.stream().map(jobConfigVO ->jobConfigVO.getId() ).collect(Collectors.toList());
         Map<Long, List<AlarmTypeEnum>> map = jobAlarmConfigService.findByJobIdList(jobIdList);
         Map<DeployModeEnum, String> domainKey = new HashMap<>();
-        domainKey.put(DeployModeEnum.YARN_PER, systemConfigService.getSystemConfigByKey(SysConfigEnum.YARN_RM_HTTP_ADDRESS.getKey()));
-        domainKey.put(DeployModeEnum.LOCAL, systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HTTP_ADDRESS.getKey()));
-        domainKey.put(DeployModeEnum.STANDALONE, systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HA_HTTP_ADDRESS.getKey()));
+
+        String flinkWebUrl = systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_STREAMING_PLATFORM_ADDRESS.getKey());
+        flinkWebUrl = flinkWebUrl + "flink/";
+        domainKey.put(DeployModeEnum.YARN_PER, flinkWebUrl);
+        domainKey.put(DeployModeEnum.LOCAL, flinkWebUrl);
+        domainKey.put(DeployModeEnum.STANDALONE, flinkWebUrl);
+//        domainKey.put(DeployModeEnum.YARN_PER, systemConfigService.getSystemConfigByKey(SysConfigEnum.YARN_RM_HTTP_ADDRESS.getKey()));
+//        domainKey.put(DeployModeEnum.LOCAL, systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HTTP_ADDRESS.getKey()));
+//        domainKey.put(DeployModeEnum.STANDALONE, systemConfigService.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HA_HTTP_ADDRESS.getKey()));
         for (JobConfigDTO jobConfigDTO : pageModel) {
             // 补充FlinkRunUrl字段
             String domain = domainKey.get(jobConfigDTO.getDeployModeEnum());

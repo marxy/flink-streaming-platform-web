@@ -91,11 +91,10 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 
   @Override
   public String getFlinkHttpAddress(DeployModeEnum deployModeEnum) {
-
     switch (deployModeEnum) {
       case LOCAL:
-        String urlLocal = flinkUrl;
-//        String urlLocal = this.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HTTP_ADDRESS.getKey());
+//        String urlLocal = flinkUrl + "/";
+        String urlLocal = this.getSystemConfigByKey(SysConfigEnum.FLINK_REST_HTTP_ADDRESS.getKey());
         if (StringUtils.isEmpty(urlLocal)) {
           throw new BizException(SysErrorEnum.SYSTEM_CONFIG_IS_NULL_FLINK_REST_HTTP_ADDRESS);
         }

@@ -135,6 +135,13 @@ public class JobRunLogVO implements Serializable {
                 jobRunLogVO.setClinetJobUrl(String.format("http://%slog/getFlinkLocalJobLog",
                         platformAddress));
             }
+
+            if (jobRunLogVO.getRemoteLogUrl() != null) {
+                String[] ss = jobRunLogVO.getRemoteLogUrl().split("#");
+                if (ss.length > 1) {
+                    jobRunLogVO.setRemoteLogUrl(platformAddress + "flink/#" + ss[1]);
+                }
+            }
         }
 
         return jobRunLogVO;
