@@ -37,11 +37,21 @@ public class SavepointBackupServiceImpl implements SavepointBackupService {
     }
 
     @Override
+    public List<SavepointBackupDTO> afterHistory10(Long jobConfigId) {
+        return SavepointBackupDTO.toDTOList(savepointBackupMapper.selectByAfterLimt10(jobConfigId));
+    }
+
+    @Override
     public String getSavepointPathById(Long jobConfigId, Long id) {
         SavepointBackup savepointBackup = savepointBackupMapper.getSavepointBackupById(jobConfigId, id);
         if (savepointBackup != null) {
             return savepointBackup.getSavepointPath();
         }
         return null;
+    }
+
+    @Override
+    public boolean deleteSavepoint(Long jobConfigId) {
+        return savepointBackupMapper.deleteSavepoint(jobConfigId) > 1;
     }
 }

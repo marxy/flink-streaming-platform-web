@@ -29,13 +29,20 @@
         'sys')
     </insert>
 
-
     <select id="selectByLimt10" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from savepoint_backup
         where job_config_id = #{jobConfigId,jdbcType=BIGINT} and is_deleted=0
         order by  backup_time desc limit 10
+    </select>
+
+    <select id="selectByAfterLimt10" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from savepoint_backup
+        where job_config_id = #{jobConfigId,jdbcType=BIGINT} and is_deleted=0
+        order by backup_time desc limit 10, 100
     </select>
 
     <select id="getSavepointBackupById" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -46,6 +53,10 @@
 
     </select>
 
+    <update id="deleteSavepoint" parameterType="java.lang.Long">
+        update savepoint_backup set is_deleted=1
+        where job_config_id = #{jobConfigId,jdbcType=BIGINT}
+    </update>
 
 
 </mapper>

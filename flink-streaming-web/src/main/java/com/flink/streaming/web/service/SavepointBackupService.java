@@ -24,13 +24,21 @@ public interface SavepointBackupService {
 
 
     /**
-     * 最近5条
+     * 最近10条
      *
      * @author zhuhuipei
      * @date 2020-09-17
      * @time 20:34
      */
     List<SavepointBackupDTO> lasterHistory10(Long jobConfigId);
+
+
+    /**
+     * 查询前10条之后的100条数据
+     * @param jobConfigId
+     * @return
+     */
+    List<SavepointBackupDTO> afterHistory10(Long jobConfigId);
 
 
     /**
@@ -42,4 +50,5 @@ public interface SavepointBackupService {
      */
     String getSavepointPathById(Long jobConfigId, Long id);
 
+    boolean deleteSavepoint(Long jobConfigId);
 }

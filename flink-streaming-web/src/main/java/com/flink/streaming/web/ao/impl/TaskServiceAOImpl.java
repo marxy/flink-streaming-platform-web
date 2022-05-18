@@ -12,6 +12,7 @@ import com.flink.streaming.web.config.SavePointThreadPool;
 import com.flink.streaming.web.enums.*;
 import com.flink.streaming.web.exceptions.BizException;
 import com.flink.streaming.web.model.dto.JobConfigDTO;
+import com.flink.streaming.web.model.dto.SavepointBackupDTO;
 import com.flink.streaming.web.model.vo.CallbackDTO;
 import com.flink.streaming.web.rpc.FlinkRestRpcAdapter;
 import com.flink.streaming.web.rpc.YarnRestRpcAdapter;
@@ -19,6 +20,7 @@ import com.flink.streaming.web.rpc.model.JobInfo;
 import com.flink.streaming.web.rpc.model.JobStandaloneInfo;
 import com.flink.streaming.web.service.JobAlarmConfigService;
 import com.flink.streaming.web.service.JobConfigService;
+import com.flink.streaming.web.service.SavepointBackupService;
 import com.flink.streaming.web.service.SystemConfigService;
 import com.flink.streaming.web.thread.AlarmDingdingThread;
 import com.flink.streaming.web.thread.AlarmHttpThread;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -67,6 +70,9 @@ public class TaskServiceAOImpl implements TaskServiceAO {
     
     @Autowired
     private DingDingService dingDingService;
+
+    @Autowired
+    private SavepointBackupService savepointBackupService;
 
     private ThreadPoolExecutor threadPoolExecutor = AlarmPoolConfig.getInstance().getThreadPoolExecutor();
 
@@ -188,11 +194,50 @@ public class TaskServiceAOImpl implements TaskServiceAO {
                     case LOCAL:
                     case STANDALONE:
                         jobStandaloneServerAO.savepoint(jobConfigDTO.getId());
+                        clearAfterLimit10(jobConfigDTO.getId());
                         break;
                 }
 
             } catch (Exception e) {
                 log.error("执行savepoint 异常", e);
+            }
+        }
+
+        private void clearAfterLimit10(Long jobConfigId) {
+            // TODO: 清理历史的savepoint，前10条之后的
+            try {
+                List<SavepointBackupDTO> savepointBackupDTOS = savepointBackupService.afterHistory10(jobConfigId);
+                for (SavepointBackupDTO savepointBackupDTO : savepointBackupDTOS) {
+                    String savepointPath = savepointBackupDTO.getSavepointPath();
+                    if (savepointPath.startsWith("file:") && savepointPath.contains("savepoint")) {
+                        String[] ss = savepointPath.split("file:");
+                        File dir = new File(ss[1]);
+                        boolean deleted = deleteDir(dir);
+                        if (deleted) {
+                            savepointBackupService.deleteSavepoint(jobConfigId);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.error("执行清理历史savepoint 异常", e);
+            }
+        }
+
+        private boolean deleteDir(File dir) {
+            if (dir.isDirectory()) {
+                String[] children = dir.list();
+                for (int i = 0; i < children.length; i++) {
+                    boolean success = deleteDir
+                            (new File(dir, children[i]));
+                    if (!success) {
+                        return false;
+                    }
+                }
+            }
+            if(dir.delete()) {
+                return true;
+            } else {
+                return false;
             }
         }
     }
