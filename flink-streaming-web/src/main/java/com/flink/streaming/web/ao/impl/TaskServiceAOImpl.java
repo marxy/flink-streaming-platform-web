@@ -206,7 +206,9 @@ public class TaskServiceAOImpl implements TaskServiceAO {
         private void clearAfterLimit10(Long jobConfigId) {
             // TODO: 清理历史的savepoint，前10条之后的
             try {
+                log.info("开始清理作业【{}】savepoint", jobConfigId);
                 List<SavepointBackupDTO> savepointBackupDTOS = savepointBackupService.afterHistory10(jobConfigId);
+                int sum = 0;
                 for (SavepointBackupDTO savepointBackupDTO : savepointBackupDTOS) {
                     String savepointPath = savepointBackupDTO.getSavepointPath();
                     if (savepointPath.startsWith("file:") && savepointPath.contains("savepoint")) {
@@ -215,9 +217,11 @@ public class TaskServiceAOImpl implements TaskServiceAO {
                         boolean deleted = deleteDir(dir);
                         if (deleted) {
                             savepointBackupService.deleteSavepoint(jobConfigId);
+                            sum++;
                         }
                     }
                 }
+                log.info("完成清理作业【{}】savepoint，成功清理{}个", jobConfigId, sum);
             } catch (Exception e) {
                 log.error("执行清理历史savepoint 异常", e);
             }
