@@ -9,14 +9,14 @@
     <fileSets>
         <fileSet>
             <directory>.</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>./</outputDirectory>
             <includes>
                 <include>README*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>./src/main/bin</directory>
-            <outputDirectory>bin</outputDirectory>
+            <outputDirectory>./bin/</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>
@@ -24,21 +24,21 @@
         </fileSet>
         <fileSet>
             <directory>./src/main/conf</directory>
-            <outputDirectory>/conf</outputDirectory>
+            <outputDirectory>./conf/</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>./src/main/resources</directory>
-            <outputDirectory>/conf</outputDirectory>
+            <outputDirectory>./conf/</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>target</directory>
-            <outputDirectory>logs</outputDirectory>
+            <outputDirectory>./logs/</outputDirectory>
             <excludes>
                 <exclude>**/*</exclude>
             </excludes>
