@@ -51,7 +51,7 @@ public class SavepointBackupServiceImpl implements SavepointBackupService {
     }
 
     @Override
-    public boolean deleteSavepoint(Long jobConfigId) {
-        return savepointBackupMapper.deleteSavepoint(jobConfigId) > 1;
+    public boolean deleteSavepoint(Long id) {
+        return savepointBackupMapper.deleteSavepoint(id) > 1;
     }
 }

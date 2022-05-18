@@ -134,7 +134,7 @@ CREATE TABLE `savepoint_backup` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `job_config_id` bigint(11) NOT NULL,
   `savepoint_path` varchar(2048) NOT NULL COMMENT '地址',
-  `backup_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '备份时间',
+  `backup_time` datetime DEFAULT '0000-00-00 00:00:00' COMMENT '备份时间',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `edit_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',

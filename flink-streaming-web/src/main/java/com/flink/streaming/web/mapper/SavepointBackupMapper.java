@@ -17,5 +17,5 @@ public interface SavepointBackupMapper {
 
     SavepointBackup getSavepointBackupById(@Param("jobConfigId") Long jobConfigId, @Param("id") Long id);
 
-    int deleteSavepoint(@Param("jobConfigId") Long jobConfigId);
+    int deleteSavepoint(@Param("id") Long id);
 }

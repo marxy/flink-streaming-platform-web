@@ -55,7 +55,7 @@
 
     <update id="deleteSavepoint" parameterType="java.lang.Long">
         update savepoint_backup set is_deleted=1
-        where job_config_id = #{jobConfigId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
     </update>
 
 

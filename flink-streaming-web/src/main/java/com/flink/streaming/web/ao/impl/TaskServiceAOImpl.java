@@ -213,10 +213,10 @@ public class TaskServiceAOImpl implements TaskServiceAO {
                     String savepointPath = savepointBackupDTO.getSavepointPath();
                     if (savepointPath.startsWith("file:") && savepointPath.contains("savepoint")) {
                         String[] ss = savepointPath.split("file:");
-                        File dir = new File(ss[1]);
-                        boolean deleted = deleteDir(dir);
+                        log.info("正在清理作业【{}】：", ss[1]);
+                        boolean deleted = deleteDir(new File(ss[1]));
                         if (deleted) {
-                            savepointBackupService.deleteSavepoint(jobConfigId);
+                            savepointBackupService.deleteSavepoint(savepointBackupDTO.getId());
                             sum++;
                         }
                     }
