@@ -141,7 +141,7 @@ CREATE TABLE `savepoint_backup` (
   `creator` varchar(32) DEFAULT 'sys',
   `editor` varchar(32) DEFAULT 'sys',
   PRIMARY KEY (`id`),
-  KEY `index` (`job_config_id`) USING BTREE
+  KEY `index` (`job_config_id`,`backup_time`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT='savepoint备份地址';
 
 

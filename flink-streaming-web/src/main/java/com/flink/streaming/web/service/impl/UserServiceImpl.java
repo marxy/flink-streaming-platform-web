@@ -1,5 +1,9 @@
 package com.flink.streaming.web.service.impl;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.jwt.JWT;
+import cn.hutool.jwt.signers.NoneJWTSigner;
+import com.flink.streaming.web.config.CustomConfig;
 import com.flink.streaming.web.exceptions.BizException;
 import com.flink.streaming.web.common.util.Base64Coded;
 import com.flink.streaming.web.common.util.Md5Utils;
@@ -19,9 +23,12 @@ import com.github.pagehelper.PageHelper;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.flink.configuration.ConfigConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +43,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private CustomConfig customConfig;
 
     @Override
     public String login(String userName, String password) {
@@ -54,7 +64,22 @@ public class UserServiceImpl implements UserService {
             throw new BizException(SysErrorEnum.USER_PASSWORD_ERROR);
         }
         String userSession = UserSession.toJsonString(user.getId(), user.getUsername(), user.getPassword());
-        return Base64Coded.encode(userSession.getBytes());
+
+        // 2小时有效
+        Date now = new Date();
+        Date expDate = DateUtil.offsetHour(now,2);
+        NoneJWTSigner signer = new NoneJWTSigner();
+        String token = JWT.create()
+                .setExpiresAt(expDate)
+                .setNotBefore(now)
+                .setJWTId(user.getId().toString())
+                .setSubject(user.getUsername())
+                .setSigner(signer)
+                .setKey(customConfig.getJwtSignatureKey().getBytes())
+                .setPayload("user", userSession)
+                .sign();
+
+        return token;
     }
 
     @Override

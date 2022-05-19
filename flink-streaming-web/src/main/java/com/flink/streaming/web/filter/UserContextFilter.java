@@ -16,37 +16,22 @@ import java.io.IOException;
 
 /**
  * @Author: quentin.zeng
- * @Date: 2022/5/13 14:41
+ * @Date: 2022/5/19 19:41
  */
 @Slf4j
-public class FlinkAuthFilter extends OncePerRequestFilter {
-
-    private static final String HOME = "index.html";
+public class UserContextFilter extends OncePerRequestFilter {
 
     @Autowired
     private CustomConfig customConfig;
 
-    private String homeUrl;
-
-    @Override
-    protected void initFilterBean() throws ServletException {
-        super.initFilterBean();
-        String contextPath = customConfig.getWebContextPath();
-        if (contextPath != null && !contextPath.endsWith("/")) {
-            contextPath = contextPath + "/";
-        } else {
-            contextPath = "/";
-        }
-        homeUrl = contextPath + HOME;
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        UserSession userSession = UserContextHolder.get();
-        if (userSession != null) {
+        UserSession userSession = UserSessionUtil.userSession(request, customConfig.getJwtSignatureKey());
+        try {
+            UserContextHolder.set(userSession);
             filterChain.doFilter(request, response);
-        } else {
-            response.sendRedirect(homeUrl);
+        } finally {
+            UserContextHolder.remove();
         }
     }
 }

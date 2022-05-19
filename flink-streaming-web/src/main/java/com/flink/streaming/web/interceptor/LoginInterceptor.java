@@ -1,6 +1,7 @@
 package com.flink.streaming.web.interceptor;
 
 import com.flink.streaming.web.common.RestResult;
+import com.flink.streaming.web.common.holder.UserContextHolder;
 import com.flink.streaming.web.common.util.UserSessionUtil;
 import com.flink.streaming.web.config.CustomConfig;
 import com.flink.streaming.web.model.dto.UserSession;
@@ -10,10 +11,8 @@ import com.flink.streaming.web.utils.WebUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
 
+    private static final String HOME = "index.html";
 
     @Autowired
     private UserService userService;
@@ -40,44 +40,28 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         String contextPath = customConfig.getWebContextPath();
-        String indexPath = "/";
         if (contextPath != null && !contextPath.endsWith("/")) {
-            indexPath = contextPath + indexPath;
+            contextPath = contextPath + "/";
+        } else {
+            contextPath = "/";
         }
         log.debug("进入LoginInterceptor拦截器 {}", request.getRequestURI());
-        if (indexPath.equals(request.getRequestURI())) {
-            response.sendRedirect("index.html");
-            return false;
-        }
-        UserSession userSession = UserSessionUtil.userSession(request);
-
-        // ajax请求
-        if (WebUtil.isAjaxRequest(request)) {
-            boolean nologin = (userSession == null) || (!userService.checkLogin(userSession));
-            if (nologin) {
-                RestResult<Object> respdata = RestResult.newInstance(Constant.RESPONE_STATUS_UNAUTH, "未登录认证！", null);
-                WebUtil.restResponseWithFlush(response, respdata);
-                return false;
-            }
+        if (request.getRequestURI().equals(contextPath) ||  request.getRequestURI().equals(contextPath + HOME)) {
             return true;
         }
-        log.debug("未知请求={}", request.getRequestURI());
-        return true;
-    }
-
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-        UserSession userSession = UserSessionUtil.userSession(request);
-        if (modelAndView != null && userSession != null) {
-            modelAndView.addObject("user", userSession.getName());
+        UserSession userSession = UserContextHolder.get();
+        if (userSession == null) {
+            if (WebUtil.isAjaxRequest(request)) {
+                RestResult<Object> respdata = RestResult.newInstance(Constant.RESPONE_STATUS_UNAUTH, "未登录认证！", null);
+                WebUtil.restResponseWithFlush(response, respdata);
+            } else {
+                response.sendRedirect(contextPath + HOME);
+            }
+            return false;
         }
 
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-
-
+        log.debug("未知请求={}", request.getRequestURI());
+        return true;
     }
 
 }

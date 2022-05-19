@@ -2,9 +2,10 @@ package com.flink.streaming.web.controller.api;
 
 import com.flink.streaming.web.common.RestResult;
 import com.flink.streaming.web.common.SystemConstants;
+import com.flink.streaming.web.common.holder.UserContextHolder;
 import com.flink.streaming.web.common.util.UserSessionUtil;
+import com.flink.streaming.web.config.CustomConfig;
 import com.flink.streaming.web.exceptions.BizException;
-import com.flink.streaming.web.model.dto.JobRunLogDTO;
 import com.flink.streaming.web.model.dto.PageModel;
 import com.flink.streaming.web.model.dto.UserDTO;
 import com.flink.streaming.web.model.dto.UserSession;
@@ -15,6 +16,7 @@ import com.flink.streaming.web.model.vo.UserVO;
 import com.flink.streaming.web.controller.web.BaseController;
 import com.flink.streaming.web.enums.UserStatusEnum;
 import com.flink.streaming.web.service.UserService;
+import com.flink.streaming.web.utils.CookieUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,7 +44,6 @@ public class UserApiController extends BaseController {
     @Autowired
     private UserService userService;
 
-
     @RequestMapping("/login")
     public RestResult login(ModelMap modelMap, HttpServletResponse response, String name, String password) {
         try {
@@ -51,12 +51,7 @@ public class UserApiController extends BaseController {
             if (StringUtils.isEmpty(cookieId)) {
                 return RestResult.error("登录失败，请联系查看日志");
             }
-            Cookie cookie = new Cookie(SystemConstants.COOKIE_NAME_SESSION_ID, cookieId);
-            //24小时有效
-            cookie.setMaxAge(24 * 60 * 60);
-            //全局有效
-            cookie.setPath("/");
-            response.addCookie(cookie);
+            CookieUtil.set(response, SystemConstants.COOKIE_NAME_SESSION_ID, cookieId, false);
             log.info("cookieId={},name={}", cookieId, name);
         } catch (Exception e) {
             log.warn("login is error ", e);
@@ -69,21 +64,9 @@ public class UserApiController extends BaseController {
     @RequestMapping("/logout")
     public RestResult logout(HttpServletRequest request, HttpServletResponse response) {
         try {
-            UserSession userSession = UserSessionUtil.userSession(request);
-            boolean nologin = (userSession == null) || (!userService.checkLogin(userSession));
-            if (nologin) {
-                RestResult.newInstance(Constant.RESPONE_STATUS_SUCCESS, "没有登录或找不到用户信息！", null);
-            }
-            UserDTO user = userService.qyeryByUserName(userSession.getName());
             //清除Cookies信息
-            Cookie cookies[] = request.getCookies();
-            for (Cookie cookie : cookies) {
-                Cookie clear_cookie = new Cookie(cookie.getName(), null);
-                clear_cookie.setMaxAge(0);
-                clear_cookie.setPath(cookie.getPath());
-                response.addCookie(cookie);
-            }
-            return RestResult.newInstance(Constant.RESPONE_STATUS_SUCCESS, "退出成功！", UserVO.toVO(user));
+            CookieUtil.remove(request, response, SystemConstants.COOKIE_NAME_SESSION_ID);
+            return RestResult.newInstance(Constant.RESPONE_STATUS_SUCCESS, "退出成功！", null);
         } catch (Exception e) {
             log.warn("login is error ", e);
             return RestResult.error(e.getMessage());
@@ -128,8 +111,8 @@ public class UserApiController extends BaseController {
     @RequestMapping("/getUserInfo")
     public RestResult<?> getUserInfo(HttpServletRequest request) {
         try {
-            UserSession userSession = UserSessionUtil.userSession(request);
-            boolean nologin = (userSession == null) || (!userService.checkLogin(userSession));
+            UserSession userSession = UserContextHolder.get();
+            boolean nologin = userSession == null;
             if (nologin) {
                 return RestResult.error("登录失败，请联系查看日志");
             }
@@ -179,8 +162,8 @@ public class UserApiController extends BaseController {
     @RequestMapping(value = "/updateCurrentUserPassword", method = RequestMethod.POST)
     public RestResult updateCurrentUserPassword(HttpServletRequest request, Integer userid, String password) {
         try {
-            UserSession userSession = UserSessionUtil.userSession(request);
-            boolean nologin = (userSession == null) || (!userService.checkLogin(userSession));
+            UserSession userSession = UserContextHolder.get();
+            boolean nologin = userSession == null;
             if (nologin) {
                 RestResult.newInstance(Constant.RESPONE_STATUS_SUCCESS, "没有登录或找不到用户信息！", null);
             }

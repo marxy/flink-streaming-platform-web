@@ -1,7 +1,10 @@
 package com.flink.streaming.web.controller.web;
 
+import com.flink.streaming.web.common.holder.UserContextHolder;
 import com.flink.streaming.web.common.util.UserSessionUtil;
+import com.flink.streaming.web.config.CustomConfig;
 import com.flink.streaming.web.model.dto.UserSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -29,7 +32,7 @@ public class BaseController {
 
 
     public String getUserName() {
-        UserSession userSession = UserSessionUtil.userSession(getServletRequest());
+        UserSession userSession = UserContextHolder.get();
         if (userSession == null) {
             return "";
         }

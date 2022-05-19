@@ -20,4 +20,7 @@ public class CustomConfig {
 
     @Value("${server.servlet.context-path:null}")
     private  String webContextPath;
+
+    @Value("${jwt.signature-key:''}")
+    private String jwtSignatureKey;
 }
