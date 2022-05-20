@@ -1,8 +1,11 @@
 package com.flink.streaming.web.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.DES;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.signers.NoneJWTSigner;
+import com.flink.streaming.web.common.util.KeyUtil;
 import com.flink.streaming.web.config.CustomConfig;
 import com.flink.streaming.web.exceptions.BizException;
 import com.flink.streaming.web.common.util.Base64Coded;
@@ -56,14 +59,16 @@ public class UserServiceImpl implements UserService {
         if (UserStatusEnum.CLOSE.getCode().equals(user.getStatus())) {
             throw new BizException(SysErrorEnum.USER_IS_STOP);
         }
-        if (!Md5Utils.getMD5String(password).equalsIgnoreCase(user.getPassword())) {
-            if (password.equals(user.getPassword())) { //数据库保存的非md5码
-                String userSession = UserSession.toJsonString(user.getId(), user.getUsername(), Md5Utils.getMD5String(user.getPassword()));
-                return Base64Coded.encode(userSession.getBytes());
-            }
+
+        DES des = SecureUtil.des(KeyUtil.getKeyBytes(customConfig.getJwtSignatureKey()));
+
+        String md5Password = Md5Utils.getMD5String(password);
+        if (!md5Password.equalsIgnoreCase(user.getPassword())) {
             throw new BizException(SysErrorEnum.USER_PASSWORD_ERROR);
         }
-        String userSession = UserSession.toJsonString(user.getId(), user.getUsername(), user.getPassword());
+
+        String encryptPassword = des.encryptHex(user.getPassword());
+        String userSession = UserSession.toJsonString(user.getId(), user.getUsername(), encryptPassword);
 
         // 2小时有效
         Date now = new Date();

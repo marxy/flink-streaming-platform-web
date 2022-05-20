@@ -1,5 +1,7 @@
 package com.flink.streaming.web.common.util;
 
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.DES;
 import cn.hutool.jwt.JWT;
 import com.flink.streaming.web.common.SystemConstants;
 import com.flink.streaming.web.model.dto.UserSession;
@@ -74,7 +76,11 @@ public class UserSessionUtil {
                     if (jwt != null && jwt.verify() && jwt.validate(60)) {
                         Object user = jwt.getPayload("user");
                         if (user != null) {
-                            return UserSession.toUserSession(user.toString());
+                            UserSession userSession = UserSession.toUserSession(user.toString());
+                            DES des = SecureUtil.des(KeyUtil.getKeyBytes(jwtSignatureKey));
+                            String decryptPassword = des.decryptStr(userSession.getPassword());
+                            userSession.setPassword(decryptPassword);
+                            return userSession;
                         }
                     }
 

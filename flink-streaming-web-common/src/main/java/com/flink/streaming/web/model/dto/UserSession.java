@@ -27,7 +27,7 @@ public class UserSession {
     }
 
     public static String toJsonString(Integer userid, String name, String password) {
-        return JSON.toJSONString(new UserSession(userid, name, Md5Utils.getMD5String(password)));
+        return JSON.toJSONString(new UserSession(userid, name, password));
     }
 
     public static UserSession toUserSession(String json) {
