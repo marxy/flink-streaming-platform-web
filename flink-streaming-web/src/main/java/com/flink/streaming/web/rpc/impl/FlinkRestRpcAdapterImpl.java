@@ -6,6 +6,7 @@ import com.flink.streaming.web.common.util.HttpUtil;
 import com.flink.streaming.web.enums.DeployModeEnum;
 import com.flink.streaming.web.enums.SysErrorEnum;
 import com.flink.streaming.web.exceptions.BizException;
+import com.flink.streaming.web.exceptions.ConnectionException;
 import com.flink.streaming.web.rpc.FlinkRestRpcAdapter;
 import com.flink.streaming.web.rpc.model.JobStandaloneInfo;
 import com.flink.streaming.web.service.SystemConfigService;
@@ -14,6 +15,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 
 /**
  * @author zhuhuipei
@@ -52,6 +56,9 @@ public class FlinkRestRpcAdapterImpl implements FlinkRestRpcAdapter {
             log.error("json 异常 res={}", res, e);
         } catch (Exception e) {
             log.error("json 异常 res={}", res, e);
+            if (e instanceof ConnectException || e instanceof SocketTimeoutException || e instanceof BizException) {
+                throw e;
+            }
         }
         return jobStandaloneInfo;
     }

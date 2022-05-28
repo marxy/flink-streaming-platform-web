@@ -279,6 +279,9 @@ public class TaskServiceAOImpl implements TaskServiceAO {
             log.error(message);
             return;
         }
+        /**
+         * TODO: 结束任务优化
+         */
         //查询任务状态
         JobStandaloneInfo jobStandaloneInfo = flinkRestRpcAdapter.getJobInfoForStandaloneByAppId(jobConfigDTO.getJobId(), jobConfigDTO.getDeployModeEnum());
         if (jobStandaloneInfo != null &&
