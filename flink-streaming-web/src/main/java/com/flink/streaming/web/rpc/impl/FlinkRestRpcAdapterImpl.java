@@ -6,7 +6,6 @@ import com.flink.streaming.web.common.util.HttpUtil;
 import com.flink.streaming.web.enums.DeployModeEnum;
 import com.flink.streaming.web.enums.SysErrorEnum;
 import com.flink.streaming.web.exceptions.BizException;
-import com.flink.streaming.web.exceptions.ConnectionException;
 import com.flink.streaming.web.rpc.FlinkRestRpcAdapter;
 import com.flink.streaming.web.rpc.model.JobStandaloneInfo;
 import com.flink.streaming.web.service.SystemConfigService;
